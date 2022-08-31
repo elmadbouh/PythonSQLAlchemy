@@ -1,21 +1,30 @@
-import sqlalchemy as db
+from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pandas as pd
-from model import Person, Base
-from sqlalchemy.orm import sessionmaker
 
-engine = db.create_engine('sqlite:///my-sqlite.db')
 
-Base.metadata.create_all(engine)
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+engine = create_engine('sqlite:///my-sqlite.db')
+
+meta = MetaData()
+
+person = Table(
+   	'person', meta, 
+   	Column('id', Integer, primary_key = True), 
+   	Column('name', String), 
+	Column('age', Integer),
+	Column('city', String) 
+)
+
+
+meta.create_all(engine)
+
 
 def add_person(name, age, city):
-	person = Person(name=name, age=age, city=city)
-	session.add(person)
-	session.commit()
 
-	print(name + " has been added to the database")
+	ins = person.insert().values(name = name, age=age, city=city)
+	conn = engine.connect()
+	result = conn.execute(ins)
+
+	print(name +" has been added to the database")
 
 def get_all():
 	df = pd.read_sql_table('person', engine)
