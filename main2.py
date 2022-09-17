@@ -1,5 +1,3 @@
-from ast import Delete
-from turtle import clear
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pandas as pd
 
